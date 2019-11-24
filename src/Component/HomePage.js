@@ -4,11 +4,13 @@ import axios from "axios";
 import classes from "./HomePage.module.css";
 import Player from "./Player";
 import Playlist from "./Playlist";
+import Loader from "./Loader";
 
 class HomePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      LoadingStatus: true,
       PlaylistData: [],
       SongPlayStatus: false,
       Progress: 0,
@@ -156,7 +158,7 @@ class HomePage extends Component {
     axios
       .get("https://5dd1894f15bbc2001448d28e.mockapi.io/playlist")
       .then(response => {
-        this.setState({ PlaylistData: response.data });
+        this.setState({ PlaylistData: response.data, LoadingStatus: false });
       })
       .catch(() => {
         alert("Failed to load data from backend");
@@ -170,27 +172,33 @@ class HomePage extends Component {
         : this.state.PlaylistData[this.state.currentSongPos];
     return (
       <div className={classes.Container}>
-        <Player
-          currentSongTrack={currentSongTrack}
-          audioRef={this.MusicPlayer}
-          playSong={this.playSong}
-          pauseSong={this.pauseSong}
-          nextSong={this.nextSong}
-          restartSong={this.restartSong}
-          repeatSong={this.repeatSong}
-          repeatBtnStyle={this.state.repeatBtnStyle}
-          shuffleSong={this.shuffleSong}
-          shuffleBtnStyle={this.state.shuffleBtnStyle}
-          songProgress={this.songProgress}
-          trackProgress={this.state.Progress}
-          seekClick={this.seekClick}
-          songEnd={this.songEnd}
-          SongPlayStatus={this.state.SongPlayStatus}
-        />
-        <Playlist
-          playlistData={this.state.PlaylistData}
-          onCardClick={this.cardClick}
-        />
+        {this.state.LoadingStatus ? (
+          <Loader />
+        ) : (
+          <div>
+            <Player
+              currentSongTrack={currentSongTrack}
+              audioRef={this.MusicPlayer}
+              playSong={this.playSong}
+              pauseSong={this.pauseSong}
+              nextSong={this.nextSong}
+              restartSong={this.restartSong}
+              repeatSong={this.repeatSong}
+              repeatBtnStyle={this.state.repeatBtnStyle}
+              shuffleSong={this.shuffleSong}
+              shuffleBtnStyle={this.state.shuffleBtnStyle}
+              songProgress={this.songProgress}
+              trackProgress={this.state.Progress}
+              seekClick={this.seekClick}
+              songEnd={this.songEnd}
+              SongPlayStatus={this.state.SongPlayStatus}
+            />
+            <Playlist
+              playlistData={this.state.PlaylistData}
+              onCardClick={this.cardClick}
+            />
+          </div>
+        )}
       </div>
     );
   }
